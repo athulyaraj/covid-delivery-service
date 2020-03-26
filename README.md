@@ -1,5 +1,16 @@
 # covid-delivery-service
-This was created as a backend to an app to order things from various shops and a timeslot will be assigned,during which the user can go and collect
+This was created as a backend to an app to order things from various shops and a timeslot will be assigned,during which the user can go and collect.
+As of now, when an order is placed, all the store keepers will be able to see the orders, and they can verify whether the order can be fulfilled.If they can, they can mark the items available.and when processing is done, a timeslot will be updated in order, during that time user can go collect. If time slot is not available, order has to be placed again in the next day.one time slot is for one person only.
+
+Future Tasks
+==============================================================================
+* Push Notification when order is ready
+* Volunteer for delivering
+* Assigning orders by location
+* Support for multiple orders by type of order
+* Order tracking
+* Navigation help for volunteers
+
 
 DB
 ===================================================================================
@@ -78,3 +89,7 @@ alter table store add COLUMN slots VARCHAR(100);
 **Postman Collection**
 
 https://www.getpostman.com/collections/0e1e00ec150f94626a19
+
+==============================================================
+
+
