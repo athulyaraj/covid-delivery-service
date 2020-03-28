@@ -60,6 +60,9 @@ public class Store extends BaseEntity{
     @Column(name = "operational_end_time")
     Timestamp operationalEndTime;
 
+    @Column(name = "max_slots")
+    Integer maxSlots;
+
     @Column(name = "slots")
-    String slots;
+    Integer slots;
 }

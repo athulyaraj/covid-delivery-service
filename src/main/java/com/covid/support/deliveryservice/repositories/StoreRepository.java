@@ -9,5 +9,5 @@ public interface StoreRepository extends JpaRepository<Store,Integer> {
     Store findByUserId(Integer userId);
 
     @Query("update Store s set s.slots = :slot where s.id = :storeId")
-    int updateSlotsInStore(@Param("slot") String slot, @Param("storeId")Integer storeId);
+    int updateSlotsInStore(@Param("slot") Integer slot, @Param("storeId")Integer storeId);
 }

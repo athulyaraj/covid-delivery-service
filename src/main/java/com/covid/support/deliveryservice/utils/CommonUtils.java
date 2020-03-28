@@ -1,10 +1,14 @@
 package com.covid.support.deliveryservice.utils;
 
 import com.covid.support.deliveryservice.constants.Constants;
+import com.covid.support.deliveryservice.entities.Store;
 import com.covid.support.deliveryservice.exceptions.CustomException;
+import com.covid.support.deliveryservice.repositories.StoreRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
@@ -13,7 +17,15 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Slf4j
+@Component
 public class CommonUtils {
+
+    StoreRepository storeRepository;
+
+    @Autowired
+    public CommonUtils(StoreRepository storeRepository){
+        this.storeRepository = storeRepository;
+    }
 
     private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
@@ -24,26 +36,23 @@ public class CommonUtils {
         return false;
     }
 
-    public static String getSlot(Timestamp startTime, Timestamp endTime){
+    public static Integer getSlot(Timestamp startTime, Timestamp endTime){
         Double maxSlots = Math.ceil((endTime.getTime() - startTime.getTime())/ Constants.timeInterval);
-        String filled = StringUtils.repeat('0',maxSlots.intValue());
-        return filled;
+        return maxSlots.intValue();
     }
 
-    public static String setSlot(String slot){
-        int index = slot.lastIndexOf('1');
-        if(index == slot.length()-1)
-        {
-            log.info("No Slot available");
-            throw new CustomException(Constants.SLOTS_NOT_AVAILABLE,Constants.SLOTS_NOT_AVAILABLE_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
+    public Integer setSlot(Integer storeId){
+        synchronized (storeId){
+            Store store = storeRepository.findById(storeId).orElse(null);
+            int noOfSlots = store.getSlots();
+            if(noOfSlots == store.getMaxSlots()){
+                log.info("No slots available");
+                throw new CustomException(Constants.SLOTS_NOT_AVAILABLE,Constants.SLOTS_NOT_AVAILABLE_MESSAGE,HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            store.setSlots(noOfSlots+1);
+            storeRepository.save(store);
+            return noOfSlots+1;
         }
-        char array[] = slot.toCharArray();
-        if(index == 0){
-            array[index] = '1';
-        }else{
-            array[index + 1] = '1';
-        }
-        return new String(array);
     }
 
     public static String generateNewToken() {

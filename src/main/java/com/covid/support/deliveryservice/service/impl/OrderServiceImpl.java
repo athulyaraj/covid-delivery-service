@@ -33,12 +33,14 @@ public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     OrderItemsRepository orderItemsRepository;
     StoreRepository storeRepository;
+    CommonUtils commonUtils;
 
     @Autowired
-    public OrderServiceImpl(UserRepository userRepository, OrderRepository orderRepository, OrderItemsRepository orderItemsRepository){
+    public OrderServiceImpl(UserRepository userRepository, OrderRepository orderRepository, OrderItemsRepository orderItemsRepository, CommonUtils commonUtils){
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.orderItemsRepository = orderItemsRepository;
+        this.commonUtils = commonUtils;
     }
 
     @Override
@@ -113,10 +115,7 @@ public class OrderServiceImpl implements OrderService {
             int status = 0;
             do {
                 Store store = storeRepository.findByUserId(userId);
-                String slot = CommonUtils.setSlot(store.getSlots());
-                store.setSlots(slot);
-                status = storeRepository.updateSlotsInStore(store.getSlots(), store.getId());
-                int slotNo = slot.lastIndexOf('1');
+                Integer slotNo = commonUtils.setSlot(store.getId());
                 Timestamp startTime = new Timestamp(store.getOperationalStartTime().getTime() + slotNo*Constants.timeInterval);
                 Timestamp endTime = new Timestamp(startTime.getTime() + Constants.timeInterval);
                 orderRepository.updateStartTimeAndEndTime(startTime,endTime,orderId);
