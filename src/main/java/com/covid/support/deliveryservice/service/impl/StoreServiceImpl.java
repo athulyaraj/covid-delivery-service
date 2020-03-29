@@ -11,6 +11,7 @@ import com.covid.support.deliveryservice.repositories.OrderRepository;
 import com.covid.support.deliveryservice.repositories.StoreRepository;
 import com.covid.support.deliveryservice.repositories.UserRepository;
 import com.covid.support.deliveryservice.utils.CommonUtils;
+import com.vividsolutions.jts.geom.Geometry;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,9 @@ public class StoreServiceImpl implements com.covid.support.deliveryservice.servi
 
     @Override
     public ResponseModel getOrders(Integer storeId) {
-        List<Order> orderList = orderRepository.findByOrderStatus(OrderStatus.PLACED);
+        Store store = storeRepository.findById(storeId).orElse(null);
+        Geometry geometry = CommonUtils.createCircle(store.getLon(),store.getLat(),5);
+        List<Order> orderList  = orderRepository.findByLocation(geometry);
         return ResponseModel.builder()
                 .status(Constants.SUCCESS_CODE)
                 .message(Constants.SUCCESS_MESSAGE)

@@ -4,6 +4,9 @@ import com.covid.support.deliveryservice.constants.Constants;
 import com.covid.support.deliveryservice.entities.Store;
 import com.covid.support.deliveryservice.exceptions.CustomException;
 import com.covid.support.deliveryservice.repositories.StoreRepository;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.util.GeometricShapeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +62,13 @@ public class CommonUtils {
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
+    }
+
+    public static Geometry createCircle(double x, double y, double radius) {
+        GeometricShapeFactory shapeFactory = new GeometricShapeFactory();
+        shapeFactory.setNumPoints(32);
+        shapeFactory.setCentre(new Coordinate(x, y));
+        shapeFactory.setSize(radius * 2);
+        return shapeFactory.createCircle();
     }
 }

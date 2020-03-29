@@ -17,6 +17,7 @@ import com.covid.support.deliveryservice.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
         }
         User user = userRepository.findById(userId).orElse(null);
         order.setUser(user);
+        order.setOrderLocation(new Point(user.getLon(),user.getLat()));
         order = orderRepository.save(order);
         return ResponseModel.builder()
                 .data(order)

@@ -2,6 +2,8 @@ package com.covid.support.deliveryservice.repositories;
 
 import com.covid.support.deliveryservice.entities.Order;
 import com.covid.support.deliveryservice.enums.OrderStatus;
+import com.vividsolutions.jts.geom.Geometry;
+import org.springframework.data.geo.GeoResults;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +28,8 @@ public interface OrderRepository extends JpaRepository<Order,Integer> {
     int updateStartTimeAndEndTime(@Param("startTime")Timestamp startTime, @Param("endTime")Timestamp endTime, @Param("id") Integer orderId);
 
     List<Order> findByOrderStatusInAndUserId(List<OrderStatus> orderStatus,Integer userId);
+
+    @Query("select o from Order o where within(o.orderLocation, :circle) = true")
+    List<Order> findByLocation(@Param("circle") Geometry geometry);
+
 }
